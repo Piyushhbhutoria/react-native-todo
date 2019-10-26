@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
 const RadioButton = props => {
     return (
@@ -19,15 +19,13 @@ const RadioButton = props => {
                         width: 13,
                         borderRadius: 6,
                         backgroundColor: 'lightgrey',
-                    }} />
+                    }}/>
                     : null
             }
         </View>
     );
 }
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({});
 
 export default RadioButton

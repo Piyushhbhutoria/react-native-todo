@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-import { TouchableNativeFeedback, TouchableOpacity } from 'react-native-gesture-handler';
+import React, {useState} from 'react';
+import {Platform, StyleSheet, Text, View} from 'react-native';
+import {TouchableNativeFeedback, TouchableOpacity} from 'react-native-gesture-handler';
 import RadioButton from './RadioButton';
 
 const GoalItem = props => {
     const [isPressed, setIsPressed] = useState(props.pressed)
+
     function pressing() {
         props.onUpdate(props.id)
         setIsPressed(!isPressed)
     }
+
     return (
         <View style={styles.listConstainer}>
             <View style={styles.listItem}>
@@ -20,13 +22,13 @@ const GoalItem = props => {
                     onPress={() => pressing()}
                     useForeground
                 >
-                    <RadioButton style={isPressed && styles.radio} selected={isPressed} />
+                    <RadioButton style={isPressed && styles.radio} selected={isPressed}/>
                 </TouchableNativeFeedback> :
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => pressing()}
                 >
-                    <RadioButton style={isPressed && styles.radio} selected={isPressed} />
+                    <RadioButton style={isPressed && styles.radio} selected={isPressed}/>
                 </TouchableOpacity>}
         </View>
     )

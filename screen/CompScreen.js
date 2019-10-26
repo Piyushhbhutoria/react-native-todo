@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
-import { AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native'
-import { TouchableNativeFeedback, TouchableOpacity } from 'react-native-gesture-handler'
-import { SwipeListView } from 'react-native-swipe-list-view'
-import { withNavigation } from 'react-navigation'
+import React, {Component} from 'react'
+import {AsyncStorage, Platform, StyleSheet, Text, View} from 'react-native'
+import {TouchableNativeFeedback, TouchableOpacity} from 'react-native-gesture-handler'
+import {SwipeListView} from 'react-native-swipe-list-view'
+import {withNavigation} from 'react-navigation'
 import GoalItem from '../components/GoalItem'
 import Header from "../components/Header"
 import Title from "../components/Title"
@@ -18,7 +18,7 @@ class CompScreen extends Component {
     }
 
     componentDidMount() {
-        const { navigation } = this.props
+        const {navigation} = this.props
         this.focusListener = navigation.addListener('didFocus', () => {
             this.update()
         })
@@ -28,7 +28,7 @@ class CompScreen extends Component {
         this.retrieveData().then(res => {
             currentGoals = this.state.courseGoal
             currentGoals = currentGoals.filter(goal => goal.pressed !== false)
-            this.setState({ completeGoal: currentGoals })
+            this.setState({completeGoal: currentGoals})
         })
     }
 
@@ -41,7 +41,7 @@ class CompScreen extends Component {
         objIndex = currentGoals.findIndex((obj => obj.id == goalId));
         currentGoals[objIndex].pressed = !currentGoals[objIndex].pressed
         // currentGoals = currentGoals.filter(goal => goal.id !== goalId)
-        this.setState({ courseGoal: currentGoals })
+        this.setState({courseGoal: currentGoals})
         this.storeData(currentGoals)
         this.update()
     }
@@ -50,7 +50,7 @@ class CompScreen extends Component {
         currentGoals = this.state.courseGoal
         objIndex = currentGoals.findIndex((obj => obj.id == goalId));
         currentGoals = currentGoals.filter(goal => goal.id !== goalId)
-        this.setState({ courseGoal: currentGoals })
+        this.setState({courseGoal: currentGoals})
         this.storeData(currentGoals)
         this.update()
     }
@@ -68,7 +68,7 @@ class CompScreen extends Component {
         try {
             const value = await AsyncStorage.getItem('currentGoals')
             if (value !== null) {
-                this.setState({ courseGoal: JSON.parse(value) })
+                this.setState({courseGoal: JSON.parse(value)})
                 // console.log(JSON.parse(value))
             }
         } catch (e) {
@@ -79,9 +79,10 @@ class CompScreen extends Component {
     render() {
         // console.log(Object.values(this.state.courseGoal))
         return (
-            <View style={styles.container} >
-                <Header />
-                <Title title={'Completed - ' + (Object.keys(this.state.completeGoal).length / Object.keys(this.state.courseGoal).length).toFixed(2) * 100 + '%'} />
+            <View style={styles.container}>
+                <Header/>
+                <Title
+                    title={'Completed - ' + (Object.keys(this.state.completeGoal).length / Object.keys(this.state.courseGoal).length).toFixed(2) * 100 + '%'}/>
                 <SwipeListView
                     useFlatList={true}
                     keyExtractor={item => item.id}

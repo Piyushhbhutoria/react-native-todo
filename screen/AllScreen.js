@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
-import { AsyncStorage, StyleSheet, Text, View, Platform } from 'react-native'
-import { TouchableOpacity, TouchableNativeFeedback } from 'react-native-gesture-handler'
-import { SwipeListView } from 'react-native-swipe-list-view'
-import { withNavigation } from 'react-navigation'
+import React, {Component} from 'react'
+import {AsyncStorage, StyleSheet, Text, View, Platform} from 'react-native'
+import {TouchableOpacity, TouchableNativeFeedback} from 'react-native-gesture-handler'
+import {SwipeListView} from 'react-native-swipe-list-view'
+import {withNavigation} from 'react-navigation'
 import GoalInput from '../components/GoalInput'
 import GoalItem from '../components/GoalItem'
 import Header from "../components/Header"
@@ -17,7 +17,7 @@ class AllScreen extends Component {
     }
 
     componentDidMount() {
-        const { navigation } = this.props
+        const {navigation} = this.props
         this.focusListener = navigation.addListener('didFocus', () => {
             this.retrieveData()
         })
@@ -30,8 +30,8 @@ class AllScreen extends Component {
     addGoalHandler = (goal) => {
         if (goal !== '') {
             currentGoals = this.state.courseGoal
-            currentGoals.push({ id: Math.random().toString(), value: goal, pressed: false })
-            this.setState({ courseGoal: currentGoals })
+            currentGoals.push({id: Math.random().toString(), value: goal, pressed: false})
+            this.setState({courseGoal: currentGoals})
             this.storeData(this.state.courseGoal)
         }
     }
@@ -40,7 +40,7 @@ class AllScreen extends Component {
         currentGoals = this.state.courseGoal
         objIndex = currentGoals.findIndex((obj => obj.id == goalId));
         currentGoals[objIndex].pressed = !currentGoals[objIndex].pressed
-        this.setState({ courseGoal: currentGoals })
+        this.setState({courseGoal: currentGoals})
         this.storeData(currentGoals)
     }
 
@@ -48,7 +48,7 @@ class AllScreen extends Component {
         currentGoals = this.state.courseGoal
         objIndex = currentGoals.findIndex((obj => obj.id == goalId));
         currentGoals = currentGoals.filter(goal => goal.id !== goalId)
-        this.setState({ courseGoal: currentGoals })
+        this.setState({courseGoal: currentGoals})
         this.storeData(currentGoals)
     }
 
@@ -65,7 +65,7 @@ class AllScreen extends Component {
         try {
             const value = await AsyncStorage.getItem('currentGoals')
             if (value !== null) {
-                this.setState({ courseGoal: JSON.parse(value) })
+                this.setState({courseGoal: JSON.parse(value)})
                 // console.log(JSON.parse(value))
             }
         } catch (e) {
@@ -76,9 +76,9 @@ class AllScreen extends Component {
     render() {
         // console.log(Object.values(this.state.courseGoal))
         return (
-            <View style={styles.container} >
-                <Header />
-                <GoalInput onAddGoal={this.addGoalHandler} />
+            <View style={styles.container}>
+                <Header/>
+                <GoalInput onAddGoal={this.addGoalHandler}/>
                 <SwipeListView
                     useFlatList={true}
                     keyExtractor={item => item.id}

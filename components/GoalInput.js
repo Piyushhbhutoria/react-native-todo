@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
-import { TouchableNativeFeedback, TouchableOpacity } from 'react-native-gesture-handler';
+import React, {useState} from 'react';
+import {Platform, StyleSheet, Text, TextInput, View} from 'react-native';
+import {TouchableNativeFeedback, TouchableOpacity} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const GoalInput = props => {
@@ -8,10 +8,12 @@ const GoalInput = props => {
     const inputHandler = (enteredText) => {
         setEnteredGoal(enteredText)
     }
+
     function inputhandler() {
         props.onAddGoal(enteredGoal)
         setEnteredGoal('')
     }
+
     return (
         <View style={styles.inputContainer}>
             <TextInput
@@ -24,12 +26,12 @@ const GoalInput = props => {
                 autoFocus
             />
             {Platform.OS === 'android' &&
-                <TouchableNativeFeedback
-                    style={styles.cancelButton}
-                    onPress={() => inputhandler()}
-                >
-                    <Icon name="cancel" size={18} color="lightgrey" onPress={() => setEnteredGoal('')} />
-                </TouchableNativeFeedback>
+            <TouchableNativeFeedback
+                style={styles.cancelButton}
+                onPress={() => inputhandler()}
+            >
+                <Icon name="cancel" size={18} color="lightgrey" onPress={() => setEnteredGoal('')}/>
+            </TouchableNativeFeedback>
             }
             {/* <Button title="Add" onPress={() => inputhandler()} /> */}
             {Platform.OS === 'android' ?
