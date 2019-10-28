@@ -2,7 +2,7 @@
 
 ## Demo
 
-<img src="https://github.com/Piyushhbhutoria/react-native-todo/blob/readme-patch/demo/Screenshot.png" alt="Screenshot" width="300"/>
+<img src="https://github.com/Piyushhbhutoria/react-native-todo/blob/master/demo/Screenshot.png" alt="Screenshot" width="300"/>
 
 Demo video [here](demo/)
 
