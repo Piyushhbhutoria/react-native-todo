@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function Title(props) {
     return (
@@ -11,13 +11,12 @@ export default function Title(props) {
 
 const styles = StyleSheet.create({
     header: {
-        height: 40,
-        justifyContent: 'flex-end',
-        // backgroundColor: 'pink'
+        height: 30,
+        justifyContent: 'center',
     },
     heading: {
         textAlign: "center",
-        fontSize: 24,
-        lineHeight: 32,
+        fontSize: 22,
+        fontFamily: 'CaveatBrush',
     }
 })

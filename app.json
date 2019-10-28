@@ -1,16 +1,22 @@
 {
   "expo": {
-    "name": "Todo",
-    "slug": "todo-app",
+    "name": "Todays task",
+    "description": "Simple todo app",
+    "slug": "todays-task-app",
+    "owner": "piyushhb",
     "privacy": "public",
     "sdkVersion": "35.0.0",
     "platforms": [
       "ios",
-      "android",
-      "web"
+      "android"
     ],
+    "githubUrl": "https://github.com/Piyushhbhutoria/react-native-todo",
+    "primaryColor": "#fff",
     "version": "1.0.0",
     "orientation": "portrait",
+    "androidStatusBar": {
+      "barStyle": "light-content"
+    },
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
@@ -25,6 +31,9 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.piyushh.todaystask"
     }
   }
 }

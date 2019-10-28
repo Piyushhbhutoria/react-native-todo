@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
-import {TouchableNativeFeedback, TouchableOpacity} from 'react-native-gesture-handler';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import Touchable from "react-native-platform-touchable";
 import RadioButton from './RadioButton';
 
 const GoalItem = props => {
@@ -16,20 +16,12 @@ const GoalItem = props => {
             <View style={styles.listItem}>
                 <Text style={[styles.text, isPressed && styles.titleText]}>{props.title}</Text>
             </View>
-            {Platform.OS === 'android' ?
-                <TouchableNativeFeedback
-                    style={styles.button}
-                    onPress={() => pressing()}
-                    useForeground
-                >
-                    <RadioButton style={isPressed && styles.radio} selected={isPressed}/>
-                </TouchableNativeFeedback> :
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => pressing()}
-                >
-                    <RadioButton style={isPressed && styles.radio} selected={isPressed}/>
-                </TouchableOpacity>}
+            <Touchable
+                style={styles.button}
+                onPress={() => pressing()}
+            >
+                <RadioButton style={isPressed && styles.radio} selected={isPressed} />
+            </Touchable>
         </View>
     )
 }
@@ -42,6 +34,8 @@ const styles = StyleSheet.create({
         padding: 12,
         // margin: 12,
         backgroundColor: 'white',
+        borderColor: 'grey',
+        borderBottomWidth: 1,
     },
     listItem: {
         padding: 7,
@@ -55,12 +49,14 @@ const styles = StyleSheet.create({
         borderColor: 'lightgrey'
     },
     text: {
-        fontSize: 20,
+        fontSize: 18,
         paddingHorizontal: 10,
+        fontFamily: 'CaveatBrush',
     },
     titleText: {
         textDecorationLine: 'line-through',
         color: 'lightgrey',
+        fontFamily: 'CaveatBrush',
     }
 });
 

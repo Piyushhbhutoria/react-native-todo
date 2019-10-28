@@ -1,25 +1,27 @@
-import React, {Component} from 'react'
-import {AsyncStorage, StyleSheet, Text, View, Platform} from 'react-native'
-import {TouchableOpacity, TouchableNativeFeedback} from 'react-native-gesture-handler'
-import {SwipeListView} from 'react-native-swipe-list-view'
-import {withNavigation} from 'react-navigation'
+import React, { Component } from 'react'
+import { Alert, AsyncStorage, Text, View } from 'react-native'
+import Touchable from "react-native-platform-touchable"
+import { SwipeListView } from 'react-native-swipe-list-view'
+import Icon from "react-native-vector-icons/MaterialCommunityIcons"
+import { withNavigation } from 'react-navigation'
 import GoalInput from '../components/GoalInput'
 import GoalItem from '../components/GoalItem'
-import Header from "../components/Header"
+import Title from "../components/Title"
+import Color from "../constants/Color"
+import Styles from '../constants/Styles'
+import { retrieveData, storeData } from '../Functions'
 
 class AllScreen extends Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            courseGoal: [],
-        }
+    state = {
+        courseGoal: [],
+        pendingGoal: [],
+        completeGoal: [],
     }
 
     componentDidMount() {
-        const {navigation} = this.props
+        const { navigation } = this.props
         this.focusListener = navigation.addListener('didFocus', () => {
-            this.retrieveData()
+            this.update()
         })
     }
 
@@ -27,58 +29,64 @@ class AllScreen extends Component {
         this.focusListener.remove()
     }
 
+    update = () => {
+        retrieveData('currentGoals').then(courseGoal => {
+            if (courseGoal) {
+                let pendingGoal = courseGoal.filter(goal => goal.pressed !== true)
+                let completeGoal = courseGoal.filter(goal => goal.pressed !== false)
+                this.setState({ courseGoal: '' })
+                this.setState({ pendingGoal, completeGoal, courseGoal })
+            } else {
+                this.setState({ courseGoal: [], pendingGoal: [], completeGoal: [] })
+            }
+        })
+    }
+
     addGoalHandler = (goal) => {
         if (goal !== '') {
-            currentGoals = this.state.courseGoal
-            currentGoals.push({id: Math.random().toString(), value: goal, pressed: false})
-            this.setState({courseGoal: currentGoals})
-            this.storeData(this.state.courseGoal)
+            let { courseGoal } = this.state
+            courseGoal.unshift({ id: Math.random().toString(), value: goal, pressed: false })
+            this.setState({ courseGoal })
+            storeData('currentGoals', courseGoal)
+            this.update()
         }
     }
 
     updateGoal = goalId => {
-        currentGoals = this.state.courseGoal
-        objIndex = currentGoals.findIndex((obj => obj.id == goalId));
-        currentGoals[objIndex].pressed = !currentGoals[objIndex].pressed
-        this.setState({courseGoal: currentGoals})
-        this.storeData(currentGoals)
+        let { courseGoal } = this.state
+        let objIndex = courseGoal.findIndex((obj => obj.id === goalId));
+        courseGoal[objIndex].pressed = !courseGoal[objIndex].pressed
+        // currentGoals = currentGoals.filter(goal => goal.id !== goalId)
+        this.setState({ courseGoal })
+        storeData('currentGoals', courseGoal)
+        this.update()
     }
 
     deleteGoal = goalId => {
-        currentGoals = this.state.courseGoal
-        objIndex = currentGoals.findIndex((obj => obj.id == goalId));
-        currentGoals = currentGoals.filter(goal => goal.id !== goalId)
-        this.setState({courseGoal: currentGoals})
-        this.storeData(currentGoals)
-    }
-
-    storeData = async (courseGoal) => {
-        try {
-            await AsyncStorage.setItem('currentGoals', JSON.stringify(courseGoal))
-            // this.retrieveData()
-        } catch (e) {
-            console.log('error storing data ', e)
-        }
-    }
-
-    retrieveData = async () => {
-        try {
-            const value = await AsyncStorage.getItem('currentGoals')
-            if (value !== null) {
-                this.setState({courseGoal: JSON.parse(value)})
-                // console.log(JSON.parse(value))
-            }
-        } catch (e) {
-            console.log('error retriving data ', e)
-        }
+        let { courseGoal } = this.state
+        courseGoal = courseGoal.filter(goal => goal.id !== goalId)
+        this.setState({ courseGoal })
+        storeData('currentGoals', courseGoal)
+        this.update()
     }
 
     render() {
-        // console.log(Object.values(this.state.courseGoal))
+        let { courseGoal, pendingGoal, completeGoal } = this.state
+        const total = Object.keys(courseGoal).length
+        const pending = Object.keys(pendingGoal).length
+        const completed = Object.keys(completeGoal).length
+        const percentc = (completed / total).toFixed(2) * 100
+        const percentp = (pending / total).toFixed(2) * 100
         return (
-            <View style={styles.container}>
-                <Header/>
-                <GoalInput onAddGoal={this.addGoalHandler}/>
+            <View style={Styles.container}>
+                <GoalInput onAddGoal={this.addGoalHandler} />
+                {!total ?
+                    <Title title={'Add a Task'} /> :
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                        <Title title={'Pending - ' + percentp.toString() + '%'} />
+                        <Title title={'Completed - ' + percentc.toString() + '%'} />
+                    </View>
+                }
                 <SwipeListView
                     useFlatList={true}
                     keyExtractor={item => item.id}
@@ -96,20 +104,14 @@ class AllScreen extends Component {
                         )
                     }}
                     renderHiddenItem={(rowData, rowMap) => (
-                        <View style={styles.rowBack}>
-                            {Platform.OS === 'android' ?
-                                <TouchableNativeFeedback
-                                    style={[styles.rightText]}
-                                    onPress={() => this.deleteGoal(rowData.item.id)}
-                                >
-                                    <Text style={styles.rightText}>Delete</Text>
-                                </TouchableNativeFeedback> :
-                                <TouchableOpacity
-                                    style={[styles.rightText]}
-                                    onPress={() => this.deleteGoal(rowData.item.id)}
-                                >
-                                    <Text style={styles.rightText}>Delete</Text>
-                                </TouchableOpacity>}
+                        <View>
+                            <Touchable
+                                onPress={() => this.deleteGoal(rowData.item.id)}
+                                style={Styles.rightText}
+                            // background={Touchable.Ripple('blue')}
+                            >
+                                <Text style={Styles.rightText}>Delete</Text>
+                            </Touchable>
                         </View>
                     )}
                     rightOpenValue={-90}
@@ -119,27 +121,32 @@ class AllScreen extends Component {
                         }, 2000)
                     }}
                 />
+                <Touchable
+                    style={Styles.actionButton}
+                    onPress={() => {
+                        Alert.alert(
+                            'Reset',
+                            "Delete All tasks. This can't be undone.",
+                            [
+                                {
+                                    text: 'Cancel',
+                                },
+                                {
+                                    text: 'Reset', onPress: () => {
+                                        AsyncStorage.removeItem("currentGoals")
+                                        this.setState({ courseGoal: [], pendingGoal: [], completeGoal: [] })
+                                    }
+                                },
+                            ],
+                            { cancelable: false },
+                        );
+                    }}
+                >
+                    <Icon name="delete-outline" size={25} color={Color.themeColor} />
+                </Touchable>
             </View>
         )
     }
-}
-
-var styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingVertical: 20,
-    },
-    rightText: {
-        padding: 12,
-        backgroundColor: 'red',
-        color: 'white',
-        alignItems: 'flex-end',
-        fontSize: 20,
-    },
-})
-
-AllScreen.navigationOptions = {
-    header: null,
 }
 
 export default withNavigation(AllScreen)

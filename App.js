@@ -1,22 +1,40 @@
-import React from 'react'
-import {StyleSheet, View, Platform, StatusBar} from "react-native"
-import {createAppContainer} from 'react-navigation'
-import {createStackNavigator} from 'react-navigation-stack'
-import {createBottomTabNavigator} from 'react-navigation-tabs'
+import { AppLoading } from 'expo'
+import { Asset } from 'expo-asset'
+import * as Font from 'expo-font'
+import React, { Component } from 'react'
+import { Platform, StatusBar, StyleSheet, View } from "react-native"
+import { createAppContainer } from 'react-navigation'
+import { createStackNavigator } from 'react-navigation-stack'
+import { createBottomTabNavigator } from 'react-navigation-tabs'
+import Header from './components/Header'
 import TabBarIcon from './components/TabBarIcon'
+import Color from './constants/Color'
 import AllScreen from "./screen/AllScreen"
 import CompScreen from "./screen/CompScreen"
 import PendScreen from "./screen/PendScreen"
+
+
+
+const config = {
+    defaultNavigationOptions: {
+        headerTitle: () => <Header />,
+        headerStyle: {
+            backgroundColor: Color.themeColor,
+            height: 60,
+        },
+    },
+}
 
 const AllStack = createStackNavigator(
     {
         All: AllScreen,
     },
+    config,
 )
 
 AllStack.navigationOptions = {
     tabBarLabel: 'All',
-    tabBarIcon: ({focused}) => (
+    tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
             name={'ios-list'}
@@ -30,11 +48,12 @@ const PendStack = createStackNavigator(
     {
         Pending: PendScreen,
     },
+    config,
 )
 
 PendStack.navigationOptions = {
     tabBarLabel: 'Pending',
-    tabBarIcon: ({focused}) => (
+    tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
             name={'ios-stats'}
@@ -48,11 +67,12 @@ const CompStack = createStackNavigator(
     {
         Completed: CompScreen,
     },
+    config,
 )
 
 CompStack.navigationOptions = {
     tabBarLabel: 'Completed',
-    tabBarIcon: ({focused}) => (
+    tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
             name={'md-checkbox-outline'}
@@ -62,21 +82,59 @@ CompStack.navigationOptions = {
 
 CompStack.path = ''
 
-const tabNavigator = createBottomTabNavigator({
-    AllStack,
-    PendStack,
-    CompStack,
-})
+const tabNavigator = createBottomTabNavigator(
+    {
+        AllStack,
+        PendStack,
+        CompStack,
+    },
+    {
+        tabBarOptions: {
+            labelStyle: {
+                fontFamily: 'CaveatBrush',
+                fontSize: 14,
+            },
+        }
+    }
+)
 
 const AppContainer = createAppContainer(tabNavigator)
 
-export default function App(porps) {
-    return (
-        <View style={styles.container}>
-            {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
-            <AppContainer/>
-        </View>
-    )
+export default class App extends Component {
+    state = {
+        isReady: false,
+    }
+
+    async _cacheResourcesAsync() {
+        const images = [require('./assets/snack-icon.png')];
+        await Font.loadAsync({
+            'CaveatBrush': require('./assets/fonts/CaveatBrush-Regular.ttf'),
+        });
+
+        const cacheImages = images.map(image => {
+            return Asset.fromModule(image).downloadAsync();
+        });
+        return Promise.all(cacheImages);
+    }
+
+    render() {
+        if (!this.state.isReady) {
+            return (
+                <AppLoading
+                    startAsync={this._cacheResourcesAsync}
+                    onFinish={() => this.setState({ isReady: true })}
+                    onError={console.warn}
+                />
+            );
+        }
+
+        return (
+            <View style={styles.container}>
+                {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+                <AppContainer />
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({

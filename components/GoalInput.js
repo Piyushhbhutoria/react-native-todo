@@ -1,7 +1,9 @@
-import React, {useState} from 'react';
-import {Platform, StyleSheet, Text, TextInput, View} from 'react-native';
-import {TouchableNativeFeedback, TouchableOpacity} from 'react-native-gesture-handler';
+import React, { useState } from 'react';
+import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { TouchableNativeFeedback } from 'react-native-gesture-handler';
+import Touchable from "react-native-platform-touchable";
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Color from '../constants/Color';
 
 const GoalInput = props => {
     const [enteredGoal, setEnteredGoal] = useState('')
@@ -23,33 +25,25 @@ const GoalInput = props => {
                 value={enteredGoal}
                 clearButtonMode='while-editing'
                 allowFontScaling
-                autoFocus
             />
             {Platform.OS === 'android' &&
-            <TouchableNativeFeedback
-                style={styles.cancelButton}
+                <TouchableNativeFeedback
+                    style={styles.cancelButton}
+                    onPress={() => inputhandler()}
+                >
+                    <Icon name="cancel" size={18} color="lightgrey" onPress={() => setEnteredGoal('')} />
+                </TouchableNativeFeedback>
+            }
+            <Touchable
+                style={styles.button}
                 onPress={() => inputhandler()}
             >
-                <Icon name="cancel" size={18} color="lightgrey" onPress={() => setEnteredGoal('')}/>
-            </TouchableNativeFeedback>
-            }
-            {/* <Button title="Add" onPress={() => inputhandler()} /> */}
-            {Platform.OS === 'android' ?
-                <TouchableNativeFeedback
-                    style={styles.button}
-                    onPress={() => inputhandler()}
-                >
-                    <Text style={styles.buttonText}>Add</Text>
-                </TouchableNativeFeedback> :
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => inputhandler()}
-                >
-                    <Text style={styles.buttonText}>Add</Text>
-                </TouchableOpacity>}
+                <Text style={styles.buttonText}>Add</Text>
+            </Touchable>
         </View>
     )
 }
+
 const styles = StyleSheet.create({
     inputContainer: {
         flexDirection: 'row',
@@ -65,15 +59,19 @@ const styles = StyleSheet.create({
         fontSize: 18,
         lineHeight: 22,
         margin: 10,
+        fontFamily: 'CaveatBrush',
     },
     button: {
-        padding: 10,
-        // borderRadius: 3,
-        borderColor: 'black',
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        borderRadius: 5,
+        borderColor: Color.tintColor,
+        borderWidth: 1,
     },
     buttonText: {
-        color: 'green',
+        color: Color.tintColor,
         fontSize: 22,
+        fontFamily: 'CaveatBrush',
     },
     cancelButton: {
         height: 18,

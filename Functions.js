@@ -1,12 +1,18 @@
-removeGoal = (currentGoals,goalId) => {
-    currentGoals = this.state.courseGoal
-    objIndex = currentGoals.findIndex((obj => obj.id == goalId));
-    currentGoals[objIndex].pressed = !currentGoals[objIndex].pressed
-    // currentGoals = currentGoals.filter(goal => goal.id !== goalId)
-    this.setState({ courseGoal: currentGoals })
-    this.storeData(currentGoals)
+import { AsyncStorage } from "react-native";
+
+export const storeData = async (key, value) => {
+    try {
+        await AsyncStorage.setItem(key, JSON.stringify(value))
+    } catch (e) {
+        console.log('error storing data ', e)
+    }
 }
 
-export default Functions = {
-    removeGoal
+export const retrieveData = async (key) => {
+    try {
+        const value = await AsyncStorage.getItem(key)
+        return JSON.parse(value)
+    } catch (e) {
+        console.log('error retriving data ', e)
+    }
 }

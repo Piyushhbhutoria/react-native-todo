@@ -1,23 +1,24 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-export default function Header() {
+export default function Header(props) {
     return (
-        <View style={styles.header}>
-            <Text style={styles.heading}>TO-DO</Text>
+        <View style={styles.container}>
+            <Text style={styles.text}>Today's Task</Text>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
-    header: {
-        height: 70,
-        justifyContent: 'flex-end',
-        // backgroundColor: '#229fab',
+    container: {
+        flex: 1,
+        // backgroundColor: '#fff',
+        alignItems: 'center',
     },
-    heading: {
-        textAlign: "center",
-        fontSize: 42,
-        lineHeight: 48,
-    }
-})
+    text: {
+        // fontWeight: 'bold',
+        fontFamily: 'CaveatBrush',
+        fontSize: 43,
+        color: '#fff',
+    },
+});

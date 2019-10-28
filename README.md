@@ -1,5 +1,11 @@
 # React Native Todo app
 
+## Demo
+
+![Screenshot](demo/Screenshot.png "Optional Title")
+
+Demo video [here](demo/)
+
 ## Features
 
 1. Add Task

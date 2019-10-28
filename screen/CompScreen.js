@@ -1,34 +1,25 @@
-import React, {Component} from 'react'
-import {AsyncStorage, Platform, StyleSheet, Text, View} from 'react-native'
-import {TouchableNativeFeedback, TouchableOpacity} from 'react-native-gesture-handler'
-import {SwipeListView} from 'react-native-swipe-list-view'
-import {withNavigation} from 'react-navigation'
+import React, { Component } from 'react'
+import { Alert, AsyncStorage, Text, View } from 'react-native'
+import Touchable from "react-native-platform-touchable"
+import { SwipeListView } from 'react-native-swipe-list-view'
+import Icon from "react-native-vector-icons/MaterialCommunityIcons"
+import { withNavigation } from 'react-navigation'
 import GoalItem from '../components/GoalItem'
-import Header from "../components/Header"
 import Title from "../components/Title"
+import Color from "../constants/Color"
+import Styles from '../constants/Styles'
+import { retrieveData, storeData } from '../Functions'
 
 class CompScreen extends Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            courseGoal: [],
-            completeGoal: []
-        }
+    state = {
+        courseGoal: [],
+        completeGoal: []
     }
 
     componentDidMount() {
-        const {navigation} = this.props
+        const { navigation } = this.props
         this.focusListener = navigation.addListener('didFocus', () => {
             this.update()
-        })
-    }
-
-    update = () => {
-        this.retrieveData().then(res => {
-            currentGoals = this.state.courseGoal
-            currentGoals = currentGoals.filter(goal => goal.pressed !== false)
-            this.setState({completeGoal: currentGoals})
         })
     }
 
@@ -36,53 +27,43 @@ class CompScreen extends Component {
         this.focusListener.remove()
     }
 
+    update = () => {
+        retrieveData('currentGoals').then(courseGoal => {
+            if (courseGoal) {
+                let completeGoal = courseGoal.filter(goal => goal.pressed !== false)
+                this.setState({ completeGoal, courseGoal })
+            } else {
+                this.setState({ courseGoal: [], completeGoal: [] })
+            }
+        })
+    }
+
     updateGoal = goalId => {
-        currentGoals = this.state.courseGoal
-        objIndex = currentGoals.findIndex((obj => obj.id == goalId));
-        currentGoals[objIndex].pressed = !currentGoals[objIndex].pressed
+        let { courseGoal } = this.state
+        let objIndex = courseGoal.findIndex((obj => obj.id === goalId));
+        courseGoal[objIndex].pressed = !courseGoal[objIndex].pressed
         // currentGoals = currentGoals.filter(goal => goal.id !== goalId)
-        this.setState({courseGoal: currentGoals})
-        this.storeData(currentGoals)
+        this.setState({ courseGoal })
+        storeData('currentGoals', courseGoal)
         this.update()
     }
 
     deleteGoal = goalId => {
-        currentGoals = this.state.courseGoal
-        objIndex = currentGoals.findIndex((obj => obj.id == goalId));
-        currentGoals = currentGoals.filter(goal => goal.id !== goalId)
-        this.setState({courseGoal: currentGoals})
-        this.storeData(currentGoals)
+        let { courseGoal } = this.state
+        courseGoal = courseGoal.filter(goal => goal.id !== goalId)
+        this.setState({ courseGoal })
+        storeData('currentGoals', courseGoal)
         this.update()
-    }
-
-    storeData = async (courseGoal) => {
-        try {
-            await AsyncStorage.setItem('currentGoals', JSON.stringify(courseGoal))
-            // this.retrieveData()
-        } catch (e) {
-            console.log('error storing data ', e)
-        }
-    }
-
-    retrieveData = async () => {
-        try {
-            const value = await AsyncStorage.getItem('currentGoals')
-            if (value !== null) {
-                this.setState({courseGoal: JSON.parse(value)})
-                // console.log(JSON.parse(value))
-            }
-        } catch (e) {
-            console.log('error retriving data ', e)
-        }
     }
 
     render() {
         // console.log(Object.values(this.state.courseGoal))
+        const completed = Object.keys(this.state.completeGoal).length
+        const total = Object.keys(this.state.courseGoal).length
+        const percent = (completed / total).toFixed(2) * 100
         return (
-            <View style={styles.container}>
-                <Header/>
-                <Title
-                    title={'Completed - ' + (Object.keys(this.state.completeGoal).length / Object.keys(this.state.courseGoal).length).toFixed(2) * 100 + '%'}/>
+            <View style={Styles.container}>
+                <Title title={total ? 'Completed - ' + percent.toString() + '%' : 'No Task to Complete'} />
                 <SwipeListView
                     useFlatList={true}
                     keyExtractor={item => item.id}
@@ -100,20 +81,14 @@ class CompScreen extends Component {
                         )
                     }}
                     renderHiddenItem={(rowData, rowMap) => (
-                        <View style={styles.rowBack}>
-                            {Platform.OS === 'android' ?
-                                <TouchableNativeFeedback
-                                    style={[styles.rightText]}
-                                    onPress={() => this.deleteGoal(rowData.item.id)}
-                                >
-                                    <Text style={styles.rightText}>Delete</Text>
-                                </TouchableNativeFeedback> :
-                                <TouchableOpacity
-                                    style={[styles.rightText]}
-                                    onPress={() => this.deleteGoal(rowData.item.id)}
-                                >
-                                    <Text style={styles.rightText}>Delete</Text>
-                                </TouchableOpacity>}
+                        <View>
+                            <Touchable
+                                onPress={() => this.deleteGoal(rowData.item.id)}
+                                style={Styles.rightText}
+                            // background={Touchable.Ripple('blue')}
+                            >
+                                <Text style={Styles.rightText}>Delete</Text>
+                            </Touchable>
                         </View>
                     )}
                     rightOpenValue={-90}
@@ -123,27 +98,32 @@ class CompScreen extends Component {
                         }, 2000)
                     }}
                 />
+                <Touchable
+                    style={Styles.actionButton}
+                    onPress={() => {
+                        Alert.alert(
+                            'Reset',
+                            "Delete All tasks. This can't be undone.",
+                            [
+                                {
+                                    text: 'Cancel',
+                                },
+                                {
+                                    text: 'Reset', onPress: () => {
+                                        AsyncStorage.removeItem("currentGoals")
+                                        this.setState({ courseGoal: [], completeGoal: [] })
+                                    }
+                                },
+                            ],
+                            { cancelable: false },
+                        );
+                    }}
+                >
+                    <Icon name="delete-outline" size={25} color={Color.themeColor} />
+                </Touchable>
             </View>
         )
     }
-}
-
-var styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingVertical: 20,
-    },
-    rightText: {
-        padding: 12,
-        backgroundColor: 'red',
-        color: 'white',
-        alignItems: 'flex-end',
-        fontSize: 20,
-    },
-})
-
-CompScreen.navigationOptions = {
-    header: null,
 }
 
 export default withNavigation(CompScreen)
