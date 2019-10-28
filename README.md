@@ -2,7 +2,7 @@
 
 ## Demo
 
-![Screenshot](demo/Screenshot.png "Optional Title")
+<img src="https://github.com/Piyushhbhutoria/react-native-todo/blob/readme-patch/demo/Screenshot.png" alt="Screenshot" width="300"/>
 
 Demo video [here](demo/)
 
