@@ -13,8 +13,6 @@ import AllScreen from "./screen/AllScreen"
 import CompScreen from "./screen/CompScreen"
 import PendScreen from "./screen/PendScreen"
 
-
-
 const config = {
     defaultNavigationOptions: {
         headerTitle: () => <Header />,
@@ -22,6 +20,8 @@ const config = {
             backgroundColor: Color.themeColor,
             height: 60,
         },
+        animationEnabled: true,
+        swipeEnabled: true,
     },
 }
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function Header(props) {
+const Header = props => {
     return (
         <View style={styles.container}>
             <Text style={styles.text}>Today's Task</Text>
@@ -22,3 +22,5 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
 });
+
+export default Header

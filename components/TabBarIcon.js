@@ -3,7 +3,7 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import Color from '../constants/Color'
 
 
-export default function TabBarIcon(props) {
+const TabBarIcon = props => {
     return (
         <Icon
             name={props.name}
@@ -13,3 +13,5 @@ export default function TabBarIcon(props) {
         />
     )
 }
+
+export default TabBarIcon

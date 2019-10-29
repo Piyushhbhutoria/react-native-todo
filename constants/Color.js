@@ -11,5 +11,5 @@ export default {
     warningText: '#666804',
     noticeBackground: tintColor,
     noticeText: '#fff',
-    themeColor: '#FF0000',
+    themeColor: '#FF3131',
 };
